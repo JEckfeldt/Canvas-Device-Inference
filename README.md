@@ -37,13 +37,17 @@ The goal is to reverse the rendering process probabilistically and determine whi
 
 - Run "pip install -r requirements.txt"
 - To run the frontend collection website run:
-'''
+
+```
 npm install -g firebase-tools
 firebase login
 firebase serve
-'''
+```
 
-'''
-pip install -r requirements.txt
+- To run the variational inference model
+```
 python train.py
-'''
+```
+
+- The backend is hosted on firebase so not available immediately from the repo
+
