@@ -33,11 +33,17 @@ The goal is to reverse the rendering process probabilistically and determine whi
 - Captures uncertainty in predictions across similar device fingerprints
 - Highlights challenges in distinguishing devices with near-identical outputs
 
-## Tech Stack
+## Instructions
 
-- Python
-- NumPy / Pandas
-- PyTorch (if used — remove if not)
-- Scikit-learn (if used)
+- Run "pip install -r requirements.txt"
+- To run the frontend collection website run:
+'''
+npm install -g firebase-tools
+firebase login
+firebase serve
+'''
 
-## Project Structure
+'''
+pip install -r requirements.txt
+python train.py
+'''
