@@ -4,7 +4,7 @@ Probabilistic model for identifying device identity from JavaScript canvas finge
 
 ## Overview
 
-This project explores whether a device can be identified from its rendered canvas output.  
+This project explores whether a device can be identified just from the way it renders images.  
 Given high-dimensional RGBA pixel data generated from deterministic browser rendering, we model the **device identity as a latent variable** and infer:
 
 P (Image | Device)
