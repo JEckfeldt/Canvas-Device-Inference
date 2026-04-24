@@ -52,7 +52,9 @@ document.getElementById("collectBtn").addEventListener("click", async function (
         };
 
         // 4. Compute hash of first pixels for a UID
-        const fingerprintHash = await sha256(formattedResults[0].pixels);
+        const fingerprintHash = await sha256(
+            formattedResults.slice(0, 5).map(item => item.pixels).join("")
+        );
         console.log("Device UID: ", fingerprintHash)
 
         // 5. Reference to Firestore document
@@ -84,7 +86,7 @@ document.getElementById("collectBtn").addEventListener("click", async function (
         await Promise.all(uploads);
         console.log("Uploaded all canvases");
 
-        button.innerText = "Data Submitted, Thank you.";
+        button.innerText = "Data Submitted, Thank you!";
         button.disabled = true;
 
     } catch (error) {
