@@ -1,40 +1,49 @@
-# This computes a global mean (how all user agents rendered) against a device-browser rendering for an image
-# then repeats this for all 100 unique canvases we did
-# we then average the 100 different maps per user agent to get a map of overall how each user agent differs from the
-
 import numpy as np
-from collections import defaultdict
+from collections import defaultdict, Counter
 from load_data import load_samples
 import matplotlib.pyplot as plt
 
-# load the data
+# Load data
+
 samples = load_samples()
 
-# only take samples from canvas 0
 canvas_0_samples = [s for s in samples if s["canvas_id"] == 0]
 
-# function to group user agents by device and browser engine
-def simplify_ua(ua: str) -> str:
 
+# UA → Engine + OS grouping
+
+def simplify_ua(ua: str) -> str:
     ua_l = ua.lower()
 
+    # Engine
     if "firefox" in ua_l:
         engine = "Firefox(Gecko)"
+
     elif "edg" in ua_l:
         engine = "Edge(Chromium)"
+
     elif "opr" in ua_l:
         engine = "Opera(Chromium)"
+
     elif "steam" in ua_l:
         engine = "Steam(Chromium)"
+
     elif "chrome" in ua_l:
         engine = "Chrome(Chromium)"
-    # IMPORTANT: Safari check must exclude Chrome/Chromium
-    elif "safari" in ua_l and "chrome" not in ua_l:
-        engine = "Safari(WebKit)"
-    else:
-        engine = "Other"
 
-    # -------- OS --------
+    # IMPORTANT: robust Safari check
+    elif (
+        "safari" in ua_l
+        and "chrome" not in ua_l
+        and "edg" not in ua_l
+        and "opr" not in ua_l
+    ):
+        engine = "Safari(WebKit)"
+
+    else:
+        engine = "Other(Unknown)"
+
+    # OS
     if "windows" in ua_l:
         os = "Windows"
     elif "android" in ua_l:
@@ -50,23 +59,35 @@ def simplify_ua(ua: str) -> str:
 
     return f"{engine}-{os}"
 
+
+# Sanity check distribution
+group_counts = Counter(
+    simplify_ua(s["user_agent"]) for s in canvas_0_samples
+)
+
+print("\nEngine-OS distribution (Canvas 0):\n")
+for k, v in group_counts.most_common():
+    print(f"{k:25s} {v}")
+
+
+
+# Group images by Engine-OS
 ua_images = defaultdict(list)
 
-# now we have a dictionary of user agents and their rendering of canvas 0
 for s in canvas_0_samples:
     ua = simplify_ua(s["user_agent"])
-    # print(ua)
-    img = s['image'][..., :3]
-
+    img = s["image"][..., :3]  # drop alpha
     ua_images[ua].append(img)
 
-# get global mean of all user agents for canvas 0
-all_imgs = np.stack([s["image"][..., :3] for s in canvas_0_samples])
 
+
+# Global mean (Canvas 0 only)
+all_imgs = np.stack([s["image"][..., :3] for s in canvas_0_samples])
 global_mean = np.mean(all_imgs, axis=0)
 
 
-# get heatmaps on where each user agent differs from the global mean
+
+# Compute heatmaps
 ua_heatmaps = {}
 
 for ua, imgs in ua_images.items():
@@ -76,20 +97,28 @@ for ua, imgs in ua_images.items():
 
     diff = np.abs(ua_mean - global_mean)
 
-    heatmap = np.mean(diff, axis=2)  # collapse RGB
+    heatmap = np.mean(diff, axis=2)  # RGB → intensity
+
+    # Normalize for comparability
+    heatmap = heatmap / (heatmap.max() + 1e-8)
 
     ua_heatmaps[ua] = heatmap
 
-print(f"Found {len(ua_heatmaps)} browser-device combos")
 
-# render each user agent heatmap
+print(f"\nFound {len(ua_heatmaps)} engine-OS groups")
 
+
+
+# Plot heatmaps
 for ua, heatmap in ua_heatmaps.items():
-    plt.figure()
-    plt.title(ua[:60])
+    plt.figure(figsize=(4, 3))
+
+    plt.title(ua, fontsize=9)
+
     plt.imshow(heatmap, cmap="hot")
-    plt.colorbar()
+
+    plt.axis("off")
+
+    plt.tight_layout()
+
     plt.show()
-
-
-
