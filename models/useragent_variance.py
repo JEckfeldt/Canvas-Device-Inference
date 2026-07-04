@@ -74,6 +74,18 @@ for k, v in group_counts.most_common():
 # Group images by Engine-OS
 ua_images = defaultdict(list)
 
+# save the first image as a reference for comparison
+img = canvas_0_samples[0]["image"]
+
+plt.figure(figsize=(6, 4))
+plt.imshow(img)
+plt.axis("off")
+plt.title("Original Canvas Image")
+plt.savefig("../public/images/original_canvas.png",
+            dpi=300,
+            bbox_inches="tight")
+plt.close()
+
 for s in canvas_0_samples:
     ua = simplify_ua(s["user_agent"])
     img = s["image"][..., :3]  # drop alpha
@@ -111,14 +123,22 @@ print(f"\nFound {len(ua_heatmaps)} engine-OS groups")
 
 # Plot heatmaps
 for ua, heatmap in ua_heatmaps.items():
-    plt.figure(figsize=(4, 3))
+    fig, ax = plt.subplots(figsize=(6, 4))
 
-    plt.title(ua, fontsize=9)
+    im = ax.imshow(heatmap, cmap="hot")
 
-    plt.imshow(heatmap, cmap="hot")
+    ax.set_title(ua)
+    ax.axis("off")
 
-    plt.axis("off")
+    # colorbar styled like your second snippet
+    cbar = plt.colorbar(im, ax=ax, label="Variance")
 
     plt.tight_layout()
 
-    plt.show()
+    plt.savefig(
+        f"../public/images/{ua.replace('-', '_')}.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
+    plt.close(fig)

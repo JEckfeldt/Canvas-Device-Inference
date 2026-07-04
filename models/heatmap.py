@@ -30,4 +30,9 @@ plt.title("Raw Pixel Variance Across User Agents")
 plt.colorbar(label="Variance")
 plt.axis("off")
 plt.tight_layout()
-plt.show()
+plt.savefig(
+    f"../public/images/overall_variance.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+plt.close()
