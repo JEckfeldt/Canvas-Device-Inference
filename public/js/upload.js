@@ -1,8 +1,9 @@
 // upload.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { generateCanvasSet } from "./canvas.js";
-import { sha256, arrayToBase64} from "./helper.js";
+import { sha256, arrayToBase64, findClosestDevice} from "./helper.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -19,7 +20,21 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 const db = getFirestore();
 
-// Button event listener
+
+let rawPixels = null;
+
+// Window Load Generate Canvas
+window.addEventListener("DOMContentLoaded", async () => {
+
+    rawPixels = generateCanvasSet();
+    
+    console.log("Window Loaded, generating image set...")
+    const match = await findClosestDevice(db, rawPixels);
+    
+    console.log("Closest device:", match);
+});
+
+// When upload data clicked, send the data to the firebase data base
 document.getElementById("collectBtn").addEventListener("click", async function () {
 
     const button = document.getElementById("collectBtn");
@@ -27,8 +42,13 @@ document.getElementById("collectBtn").addEventListener("click", async function (
     button.innerText = "Collecting";
 
     try {
-        // 1. Generate 100 raw canvases
-        const rawPixels = generateCanvasSet();
+
+        // rawpixels =  100 canvas images generated
+        if (!rawPixels) {
+            console.error("Canvas not ready yet");
+            button.innerText = "Please wait...";
+            return;
+        }
 
         // 2. Format pixels (raw → Base64)
         const formattedResults = rawPixels.map(item => ({

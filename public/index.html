@@ -41,6 +41,14 @@ canvas {
 .small-text {
     color: #666;
 }
+/* fingerprint output section */
+#fingerprint-output {
+    background: #0e3064;
+    color: rgb(223, 224, 223);
+    padding: 10px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+}
 </style>
 
 </head>
@@ -143,11 +151,14 @@ canvas {
 
     </section>
 
+    <!-- Fingerprint Section -->
+
     <section class="card-box" id="fingerprint-section">
         <h3>Your Browser Fingerprint</h3>
 
         <p style="margin-top: 8px; color: #555;">
-            This is what your browser's rendering of the canvas image looks like along with some other information about your device/browser environment commonly used to improve browsing experience as well as reidentify users across sessions.
+            This is data stored in your browser that enables websites to optimize your experience and sometimes reidentify you (like when you check "Remember this device").
+            The user agent is generally the most telling metric, but can be inconsistent and not discriminating enough at times. When combined with image rendering identification, it greatly improves device recognition accuracy. 
         </p>
 
         <div id="fingerprint-output" style="margin-top: 12px; font-family: monospace; font-size: 13px;"></div>
@@ -179,6 +190,8 @@ canvas {
 </main>
 
 <script type="module" src="js/upload.js"></script>
+<script type="module" src="js/fingerprint.js"></script>
+
 
 
 </body>
