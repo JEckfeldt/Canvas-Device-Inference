@@ -164,6 +164,21 @@ canvas {
         <div id="fingerprint-output" style="margin-top: 12px; font-family: monospace; font-size: 13px;"></div>
     </section>
 
+    <!-- Most similar device rendering section -->
+    <section class="card-box" id="canvas-match-section">
+        <h3>Canvas Fingerprint Match</h3>
+
+        <p style="margin-top: 8px; color: #555;">
+            This section compares your device’s canvas rendering against previously recorded devices.
+            It measures pixel-level differences in rendering behavior caused by differences in GPU, browser engine,
+            OS font rendering, and graphics. If we have seen your exact device before, the match will proabably be 100 or very close. If it is a device that has not been collected yet, then the match may be lower.
+        </p>
+
+        <div id="canvas-match-output"
+            style="margin-top: 12px; font-family: monospace; font-size: 13px; color: #222;">
+            Loading match...
+        </div>
+    </section>
 
     <!-- consent field to upload data -->
     <section class="card-box">

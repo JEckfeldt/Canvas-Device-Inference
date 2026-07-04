@@ -26,12 +26,23 @@ let rawPixels = null;
 // Window Load Generate Canvas
 window.addEventListener("DOMContentLoaded", async () => {
 
+    console.log("Window Loaded, generating image set...")
     rawPixels = generateCanvasSet();
     
-    console.log("Window Loaded, generating image set...")
     const match = await findClosestDevice(db, rawPixels);
     
     console.log("Closest device:", match);
+
+    // now update the inner html of our page to show what device we are most similar to that we have seen.
+    const output = document.getElementById("canvas-match-output");
+
+    output.innerHTML = `
+    <div><b>Best Match Found</b></div>
+    <hr style="border: 0.5px solid #ddd; margin: 6px 0;" />
+
+    <div><b>User Agent:</b> ${match.userAgent}</div>
+    <div><b>Similarity:</b> ${match.similarity?.toFixed(1)}%</div>
+    `;
 });
 
 // When upload data clicked, send the data to the firebase data base
